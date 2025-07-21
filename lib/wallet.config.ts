@@ -16,7 +16,6 @@ export interface FetchOutflowsResponse {
   outflows: Transaction[];
   totalAmount: number;
 }
-// <-- AÑADIDO: Interfaz para la respuesta del saldo
 export interface FetchBalanceResponse {
   total_amount: number;
   available_balance: number;
@@ -28,14 +27,12 @@ export interface WalletConfig {
   accessToken: string;
   fetchIncoming: (date: string, page: number) => Promise<FetchTransactionsResponse>;
   fetchOutflows: (date: string) => Promise<FetchOutflowsResponse>;
-  // <-- AÑADIDO: El método que faltaba
   fetchBalance: () => Promise<FetchBalanceResponse>;
 }
 
 // --- LÓGICA DE MERCADO PAGO (Transacciones) ---
 const fetchMercadoPagoLogic = async (accessToken: string, date: string): Promise<any> => {
   const apiLimit = 200;
-  // Usamos la hora actual para definir el día en el huso horario de Argentina
   const begin_date = new Date(`${date}T00:00:00.000-03:00`);
   const end_date = new Date(begin_date);
   end_date.setDate(begin_date.getDate() + 1);
@@ -76,7 +73,7 @@ const getMercadoPagoIncoming = (accessToken: string, userId: string) => async (d
     const offset = (page - 1) * limitPerPage;
     const paginated = filtered.slice(offset, offset + limitPerPage);
 
-    const transactions = paginated.map((p: any) => ({
+    const transactions: Transaction[] = paginated.map((p: any) => ({
       id: p.id,
       nombre: p.payer?.nickname || p.payer?.email || 'Ingreso sin remitente',
       monto: p.transaction_amount,
@@ -91,7 +88,7 @@ const getMercadoPagoOutflows = (accessToken: string, userId: string) => async (d
     const data = await fetchMercadoPagoLogic(accessToken, date);
     const myUserId = parseInt(userId, 10);
 
-    const outflows = data.results
+    const outflows: Transaction[] = data.results
       .filter((p: any) => {
         const isPayer = (p.payer?.id === myUserId) || (p.payer_id === myUserId);
         return (
@@ -108,12 +105,12 @@ const getMercadoPagoOutflows = (accessToken: string, userId: string) => async (d
         hora: p.date_approved || p.date_created,
       }));
       
-    const totalAmount = outflows.reduce((sum, outflow) => sum + outflow.monto, 0);
+    // <-- CAMBIO AQUÍ: Se agregaron los tipos 'number' y 'Transaction' a los parámetros de reduce.
+    const totalAmount = outflows.reduce((sum: number, outflow: Transaction) => sum + outflow.monto, 0);
 
     return { outflows, totalAmount };
 };
 
-// <-- AÑADIDO: Nueva función para obtener el saldo de la cuenta
 const getMercadoPagoBalance = (accessToken: string, userId: string) => async (): Promise<FetchBalanceResponse> => {
     if (!userId || userId === '0') {
         throw new Error('El User ID es inválido o no está configurado para obtener el saldo.');
@@ -128,14 +125,13 @@ const getMercadoPagoBalance = (accessToken: string, userId: string) => async ():
     return response.json();
 };
 
-
 // --- CONFIGURACIÓN CENTRAL DE BILLETERAS ---
 export const wallets: WalletConfig[] = [
   {
     id: 'cuenta_fernando_scatturice',
     name: 'MP Cuenta Fernando Scatturice',
     accessToken: process.env.MP_TOKEN_CUENTA_FERNANDO_SCATTURICE || '',
-    fetchIncoming: getMercadoPagoIncoming(process.env.MP_TOKEN_CUENTA_FERNANDO_SCATTURICE || '', process.env.MP_CLIENT_ID_CUENTA_FERNANDO_SCATTURICE || '0'),
+    fetchIncoming: getMercadoPagoIncoming(process.env.MP_TOKEN_CUenta_FERNANDO_SCATTURICE || '', process.env.MP_CLIENT_ID_CUENTA_FERNANDO_SCATTURICE || '0'),
     fetchOutflows: getMercadoPagoOutflows(process.env.MP_TOKEN_CUENTA_FERNANDO_SCATTURICE || '', process.env.MP_CLIENT_ID_CUENTA_FERNANDO_SCATTURICE || '0'),
     fetchBalance: getMercadoPagoBalance(process.env.MP_TOKEN_CUENTA_FERNANDO_SCATTURICE || '', process.env.MP_CLIENT_ID_CUENTA_FERNANDO_SCATTURICE || '0'),
   },
