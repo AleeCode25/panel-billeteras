@@ -7,7 +7,7 @@ export async function POST(request: Request) {
 
   if (username === 'admin' && password === 'reysanto') {
     // Credenciales correctas: creamos la cookie
-    cookies().set('auth_session', 'logged_in', { httpOnly: true, path: '/' });
+    await cookies().set('auth_session', 'logged_in', { httpOnly: true, path: '/' });
     return NextResponse.json({ message: 'Login exitoso' });
   }
 
