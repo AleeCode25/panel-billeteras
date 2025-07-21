@@ -131,7 +131,7 @@ export const wallets: WalletConfig[] = [
     id: 'cuenta_fernando_scatturice',
     name: 'MP Cuenta Fernando Scatturice',
     accessToken: process.env.MP_TOKEN_CUENTA_FERNANDO_SCATTURICE || '',
-    fetchIncoming: getMercadoPagoIncoming(process.env.MP_TOKEN_CUenta_FERNANDO_SCATTURICE || '', process.env.MP_CLIENT_ID_CUENTA_FERNANDO_SCATTURICE || '0'),
+    fetchIncoming: getMercadoPagoIncoming(process.env.MP_TOKEN_CUENTA_FERNANDO_SCATTURICE || '', process.env.MP_CLIENT_ID_CUENTA_FERNANDO_SCATTURICE || '0'),
     fetchOutflows: getMercadoPagoOutflows(process.env.MP_TOKEN_CUENTA_FERNANDO_SCATTURICE || '', process.env.MP_CLIENT_ID_CUENTA_FERNANDO_SCATTURICE || '0'),
     fetchBalance: getMercadoPagoBalance(process.env.MP_TOKEN_CUENTA_FERNANDO_SCATTURICE || '', process.env.MP_CLIENT_ID_CUENTA_FERNANDO_SCATTURICE || '0'),
   },
