@@ -72,7 +72,7 @@ export default function WalletBlock({ wallet }: Props) {
   return (
     <>
       <div className="bg-gray-800 rounded-lg shadow-lg p-6 flex flex-col min-h-[450px]">
-        <h2 className="text-2xl font-semibold mb-4">{wallet.name}</h2>
+        <h2 className="text-xl font-semibold mb-4 truncate" title={wallet.name}>{wallet.name}</h2>
         
         <div className="mb-4">
             <button 
@@ -95,25 +95,13 @@ export default function WalletBlock({ wallet }: Props) {
           <ul className="space-y-3 flex-grow overflow-y-auto pr-2">
             {transactions.map((tx) => (
               <li key={tx.id} className="bg-gray-700 p-3 rounded-md flex justify-between items-center gap-2">
-                {/* Contenedor de la información izquierda */}
                 <div className="flex-1 min-w-0">
-                  {/*
-                    AÑADIMOS ESTAS CLASES:
-                    - truncate: Si el texto es muy largo, lo corta con "..."
-                    - text-base: Ajustamos el tamaño principal
-                  */}
                   <p className="font-semibold text-base truncate" title={tx.nombre}>{tx.nombre}</p>
-                  
-                  {/*
-                    AÑADIMOS ESTAS CLASES:
-                    - text-xs: Hacemos el texto secundario un poco más pequeño
-                  */}
                   {tx.cuil && <p className="text-xs text-gray-400">CUIL: {tx.cuil}</p>}
                   <p className="text-xs text-gray-400">
                     Hora: {tx.hora ? new Date(tx.hora).toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', hour12: false }) : 'N/A'} hs
                   </p>
                 </div>
-                {/* Contenedor del monto */}
                 <div className="flex-shrink-0">
                   <span className="text-base font-mono text-green-400">+ ${tx.monto.toLocaleString('es-AR')}</span>
                 </div>

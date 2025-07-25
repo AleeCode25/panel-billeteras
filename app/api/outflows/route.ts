@@ -14,8 +14,7 @@ export async function POST(request: Request) {
     const data = await wallet.fetchOutflows(date);
     return NextResponse.json(data);
     
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json({ message: 'Error interno del servidor' }, { status: 500 });
+  } catch (error: any) {
+    return NextResponse.json({ message: error.message || 'Error interno' }, { status: 500 });
   }
 }
