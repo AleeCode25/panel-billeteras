@@ -19,7 +19,7 @@ interface Props {
 }
 
 export default function WalletBlock({ wallet }: Props) {
-  const { selectedDate, refreshKey } = useDashboard();
+  const { selectedDate, selectedShift, refreshKey } = useDashboard();
   
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -31,7 +31,7 @@ export default function WalletBlock({ wallet }: Props) {
   useEffect(() => {
     setCurrentPage(1);
     setError(null);
-  }, [selectedDate, refreshKey]);
+  }, [selectedDate, selectedShift, refreshKey]);
   
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -41,7 +41,7 @@ export default function WalletBlock({ wallet }: Props) {
         const response = await fetch('/api/transactions', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ walletId: wallet.id, date: selectedDate, page: currentPage }),
+          body: JSON.stringify({ walletId: wallet.id, date: selectedDate, page: currentPage, shift: selectedShift }),
         });
 
         if (!response.ok) {
@@ -67,7 +67,7 @@ export default function WalletBlock({ wallet }: Props) {
     if (selectedDate) {
       fetchTransactions();
     }
-  }, [wallet.id, selectedDate, currentPage, refreshKey]);
+  }, [wallet.id, selectedDate, currentPage, selectedShift, refreshKey]);
 
   return (
     <>
@@ -83,14 +83,14 @@ export default function WalletBlock({ wallet }: Props) {
             </button>
         </div>
         
-        <h3 className="font-bold text-lg mb-2 text-gray-300 border-t border-gray-700 pt-4">Ingresos del Día</h3>
+        <h3 className="font-bold text-lg mb-2 text-gray-300 border-t border-gray-700 pt-4">Ingresos del Turno</h3>
         
         {isLoading ? (
           <div className="flex-grow flex items-center justify-center"><p className="text-gray-400 animate-pulse">Cargando...</p></div>
         ) : error ? (
           <div className="flex-grow flex items-center justify-center text-center"><p className="text-red-400">⚠️<br/>{error}</p></div>
         ) : transactions.length === 0 ? (
-          <div className="flex-grow flex items-center justify-center"><p className="text-gray-500">No hay ingresos para esta fecha.</p></div>
+          <div className="flex-grow flex items-center justify-center"><p className="text-gray-500">No hay ingresos.</p></div>
         ) : (
           <ul className="space-y-3 flex-grow overflow-y-auto pr-2">
             {transactions.map((tx) => (
@@ -111,9 +111,9 @@ export default function WalletBlock({ wallet }: Props) {
         )}
         
         <div className="flex justify-between items-center mt-6 pt-4 border-t border-gray-700">
-          <button onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage <= 1 || isLoading} className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:bg-gray-500 transition-all">Anterior</button>
-          <span className="text-gray-400">Página {currentPage} de {totalPages || 1}</span>
-          <button onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage >= totalPages || isLoading} className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:bg-gray-500 transition-all">Siguiente</button>
+          <button onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage <= 1 || isLoading} className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:bg-gray-500">Anterior</button>
+          <span className="text-gray-400">Pág {currentPage} de {totalPages || 1}</span>
+          <button onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage >= totalPages || isLoading} className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:bg-gray-500">Siguiente</button>
         </div>
       </div>
 
@@ -121,7 +121,7 @@ export default function WalletBlock({ wallet }: Props) {
         <OutflowsPopup 
           walletId={wallet.id} 
           walletName={wallet.name}
-          date={selectedDate} 
+          // date={selectedDate}  <-- ELIMINAMOS ESTA LÍNEA
           onClose={() => setIsPopupOpen(false)} 
         />
       )}
