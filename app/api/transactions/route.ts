@@ -4,14 +4,18 @@ import { wallets } from '@/lib/wallet.config';
 
 export async function POST(request: Request) {
   try {
-    const { walletId, date, page } = await request.json();
+    // Leemos el 'shift' del cuerpo de la petición, además de los otros datos
+    const { walletId, date, page, shift } = await request.json();
+
     const wallet = wallets.find(w => w.id === walletId);
 
     if (!wallet) {
       return NextResponse.json({ message: 'Billetera no encontrada' }, { status: 404 });
     }
     
-    const data = await wallet.fetchIncoming(date, page);
+    // Pasamos los 3 argumentos: 'date', 'page' y 'shift'
+    const data = await wallet.fetchIncoming(date, page, shift);
+    
     return NextResponse.json(data);
     
   } catch (error: any) {
