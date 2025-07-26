@@ -16,13 +16,12 @@ export interface FetchOutflowsResponse {
   outflows: Transaction[];
   totalAmount: number;
 }
-// 1. AÑADIMOS 'shifts' DE VUELTA A LA INTERFAZ
 export interface WalletConfig {
   id: string;
   name: string;
   accessToken: string;
   userId: string;
-  shifts: ('mañana' | 'tarde' | 'noche')[]; // Turnos a los que pertenece
+  shifts: ('mañana' | 'tarde' | 'noche')[];
   fetchIncoming: (date: string, page: number, shift: string) => Promise<FetchTransactionsResponse>;
   fetchOutflows: (date: string, shift: string) => Promise<FetchOutflowsResponse>;
 }
@@ -105,7 +104,9 @@ const getMercadoPagoIncoming = (accessToken: string, userId: string) => async (d
 const getMercadoPagoOutflows = (accessToken: string, userId: string) => async (date: string, shift: string): Promise<FetchOutflowsResponse> => {
     const data = await fetchMercadoPagoLogic(accessToken, date, shift);
     const myUserId = parseInt(userId, 10);
-    const outflows = data.results
+    
+    // Añadimos el tipo explícito a la constante 'outflows'
+    const outflows: Transaction[] = data.results
       .filter((p: any) => {
         const isPayer = (p.payer?.id === myUserId) || (p.payer_id === myUserId);
         return (p.status === 'approved' && isPayer && p.collector_id !== myUserId);
@@ -117,13 +118,16 @@ const getMercadoPagoOutflows = (accessToken: string, userId: string) => async (d
         cuil: p.collector?.identification?.number || 'N/A',
         hora: p.date_approved || p.date_created,
       }));
-    const totalAmount = outflows.reduce((sum, outflow) => sum + outflow.monto, 0);
+      
+    // AÑADIMOS LOS TIPOS A LOS PARÁMETROS DE REDUCE
+    const totalAmount = outflows.reduce((sum: number, outflow: Transaction) => sum + outflow.monto, 0);
+
     return { outflows, totalAmount };
 };
 
+
 // --- CONFIGURACIÓN CENTRAL DE BILLETERAS ---
 export const wallets: WalletConfig[] = [
-  // 2. AÑADIMOS LA PROPIEDAD 'shifts' A CADA BILLETERA
   {
     id: 'cuenta_fernando_scatturice',
     name: 'MP Cuenta Fernando Scatturice',
