@@ -173,4 +173,13 @@ export const wallets: WalletConfig[] = [
     fetchIncoming: getMercadoPagoIncoming(process.env.MP_TOKEN_CUENTA_MARIANA_CRUCCI || '', process.env.MP_CLIENT_ID_CUENTA_MARIANA_CRUCCI || '0'),
     fetchOutflows: getMercadoPagoOutflows(process.env.MP_TOKEN_CUENTA_MARIANA_CRUCCI || '', process.env.MP_CLIENT_ID_CUENTA_MARIANA_CRUCCI || '0'),
   },
+  {
+    id: 'cuenta_cristian_eduardo',
+    name: 'MP Cuenta Cristian Eduardo',
+    shifts: ['mañana', 'tarde'],
+    accessToken: process.env.MP_TOKEN_CUENTA_CRISTIAN_EDUARDO || '',
+    userId: process.env.MP_CLIENT_ID_CRISTIAN_EDUARDO || '0',
+    fetchIncoming: getMercadoPagoIncoming(process.env.MP_TOKEN_CUENTA_CRISTIAN_EDUARDO || '', process.env.MP_CLIENT_ID_CUENTA_CRISTIAN_EDUARDO || '0'),
+    fetchOutflows: getMercadoPagoOutflows(process.env.MP_TOKEN_CUENTA_CRISTIAN_EDUARDO || '', process.env.MP_CLIENT_ID_CUENTA_CRISTIAN_EDUARDO || '0'),
+  },
 ];
